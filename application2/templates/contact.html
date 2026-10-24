@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Contact - StayVista{% endblock %}
+
+{% block content %}
+<section class="page-banner">
+  <div class="container">
+    <h1 class="fw-bold">Contact us</h1>
+    <p class="mb-0">Questions about a stay? Send a message and it is saved to your demo database.</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row g-5">
+    <div class="col-lg-7">
+      <form method="post" class="booking-card" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label small" for="c-name">Name</label>
+            <input type="text" class="form-control" id="c-name" name="name" value="{{ form.get('name', '') }}" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small" for="c-email">Email</label>
+            <input type="email" class="form-control" id="c-email" name="email" value="{{ form.get('email', '') }}" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label small" for="c-subject">Subject</label>
+            <input type="text" class="form-control" id="c-subject" name="subject" value="{{ form.get('subject', '') }}" maxlength="120">
+          </div>
+          <div class="col-12">
+            <label class="form-label small" for="c-msg">Message</label>
+            <textarea class="form-control" id="c-msg" name="message" rows="5" maxlength="1000" required>{{ form.get('message', '') }}</textarea>
+          </div>
+          <div class="col-12">
+            <button class="btn btn-brand btn-lg" type="submit"><i class="bi bi-send me-2"></i>Send message</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-lg-5">
+      <div class="contact-info">
+        <div class="item"><i class="bi bi-geo-alt-fill"></i><div><strong>Head office</strong><br>12 Residency Road, Bengaluru, India</div></div>
+        <div class="item"><i class="bi bi-telephone-fill"></i><div><strong>Phone</strong><br>+91 98765 43210 (demo)</div></div>
+        <div class="item"><i class="bi bi-envelope-fill"></i><div><strong>Email</strong><br>hello@stayvista.example</div></div>
+        <div class="item"><i class="bi bi-clock-fill"></i><div><strong>Support hours</strong><br>24 x 7, all year round</div></div>
+        <a href="{{ url_for('demo') }}" class="btn btn-outline-brand mt-2"><i class="bi bi-database me-1"></i>See your saved messages</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

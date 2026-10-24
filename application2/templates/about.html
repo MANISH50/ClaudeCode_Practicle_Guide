@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}About - StayVista{% endblock %}
+
+{% block content %}
+<section class="page-banner">
+  <div class="container">
+    <h1 class="fw-bold">About StayVista</h1>
+    <p class="mb-0">A demo hotel-booking experience built with Python, Flask, SQLite and Bootstrap.</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row g-5 align-items-center mb-5">
+    <div class="col-lg-6">
+      <img src="{{ seeded_image('stayvista-about', 900, 640) }}" alt="Scenic travel destination" class="rounded-4 shadow w-100 img-fade">
+    </div>
+    <div class="col-lg-6">
+      <span class="kicker">Our story</span>
+      <h2 class="fw-bold mb-3">Travel planning without the clutter</h2>
+      <p class="text-muted">StayVista shows how a clean, friendly booking journey can work end to end: search, filter, compare, save, book and cancel, all with instant feedback.</p>
+      <p class="text-muted">Everything you do is saved to a private SQLite database that exists only for your browser session, so you can explore freely without affecting anyone else.</p>
+      <a href="{{ url_for('hotels') }}" class="btn btn-brand me-2">Browse hotels</a>
+      <a href="{{ url_for('contact') }}" class="btn btn-outline-brand">Contact us</a>
+    </div>
+  </div>
+
+  <div class="section-head text-center"><span class="kicker">Under the hood</span><h2>The tech stack</h2></div>
+  <div class="row g-4 text-center">
+    <div class="col-md-3 col-6"><div class="feature"><i class="bi bi-filetype-py"></i><h6>Python + Flask</h6><p class="small text-muted">Routing, validation, CSRF protection and JSON APIs.</p></div></div>
+    <div class="col-md-3 col-6"><div class="feature"><i class="bi bi-database"></i><h6>SQLite per session</h6><p class="small text-muted">A fresh, seeded database file for every visitor.</p></div></div>
+    <div class="col-md-3 col-6"><div class="feature"><i class="bi bi-bootstrap"></i><h6>Bootstrap 5</h6><p class="small text-muted">Responsive grid, carousel, forms and components.</p></div></div>
+    <div class="col-md-3 col-6"><div class="feature"><i class="bi bi-lightning"></i><h6>Live JavaScript</h6><p class="small text-muted">Instant price quotes and one-tap wishlist.</p></div></div>
+  </div>
+</div>
+{% endblock %}

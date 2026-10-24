@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% from "_macros.html" import hotel_card %}
+
+{% block nav_class %}nav-transparent{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <img class="hero-bg img-fade" src="{{ seeded_image('stayvista-hero', 1920, 1080) }}" alt="">
+  <div class="hero-overlay"></div>
+  <div class="container position-relative">
+    <div class="row justify-content-center text-center text-white">
+      <div class="col-lg-9">
+        <span class="hero-kicker">Over 12 handpicked stays across India</span>
+        <h1 class="display-3 fw-bold mb-3">Find your perfect stay,<br>book in seconds</h1>
+        <p class="lead mb-5">Beaches, palaces, hill stations and backwaters. Compare, save and book with instant confirmation.</p>
+      </div>
+    </div>
+
+    <form action="{{ url_for('hotels') }}" method="get" class="search-card shadow-lg">
+      <div class="row g-3 align-items-end">
+        <div class="col-lg-3 col-md-6">
+          <label class="form-label" for="s-dest"><i class="bi bi-geo-alt me-1"></i>Destination</label>
+          <select class="form-select" id="s-dest" name="city">
+            <option value="">All destinations</option>
+            {% for c in cities %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-lg-2 col-md-6">
+          <label class="form-label" for="s-in"><i class="bi bi-calendar-event me-1"></i>Check-in</label>
+          <input type="date" class="form-control" id="s-in" name="check_in" value="{{ check_in }}" min="{{ today }}" required>
+        </div>
+        <div class="col-lg-2 col-md-6">
+          <label class="form-label" for="s-out"><i class="bi bi-calendar-check me-1"></i>Check-out</label>
+          <input type="date" class="form-control" id="s-out" name="check_out" value="{{ check_out }}" min="{{ today }}" required>
+        </div>
+        <div class="col-lg-2 col-md-6">
+          <label class="form-label" for="s-guests"><i class="bi bi-people me-1"></i>Guests</label>
+          <select class="form-select" id="s-guests" name="guests">
+            {% for n in range(1, 9) %}<option value="{{ n }}" {{ 'selected' if n == 2 }}>{{ n }} guest{{ 's' if n > 1 }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-lg-3">
+          <button class="btn btn-brand btn-lg w-100" type="submit"><i class="bi bi-search me-2"></i>Search hotels</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="row text-center text-white mt-5 hero-stats">
+      <div class="col-4"><div class="stat-num">12+</div><div class="small">Curated hotels</div></div>
+      <div class="col-4"><div class="stat-num">4.6</div><div class="small">Average rating</div></div>
+      <div class="col-4"><div class="stat-num">24x7</div><div class="small">Guest support</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Popular destinations</span>
+      <h2>Where do you want to go?</h2>
+    </div>
+    <div class="row g-4">
+      {% for d in destinations %}
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('hotels', city=d['city']) }}" class="dest-card">
+          <img src="{{ seeded_image('stayvista-city-' ~ d['city']|lower|replace(' ', ''), 640, 420) }}"
+               alt="{{ d['city'] }}" loading="lazy" class="img-fade">
+          <div class="dest-info">
+            <h4>{{ d['city'] }}</h4>
+            <span>{{ d['total'] }} hotel{{ 's' if d['total'] > 1 }} &middot; from {{ money(d['from_price']) }}</span>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section bg-soft">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-2">
+      <div class="section-head mb-0">
+        <span class="kicker">Featured stays</span>
+        <h2>Guest favourites this season</h2>
+      </div>
+      <a href="{{ url_for('hotels') }}" class="btn btn-outline-brand">See all hotels <i class="bi bi-arrow-right ms-1"></i></a>
+    </div>
+    <div class="row g-4">
+      {% for h in featured %}
+      <div class="col-lg-4 col-md-6">{{ hotel_card(h, wished, check_in, check_out) }}</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head text-center">
+      <span class="kicker">Why StayVista</span>
+      <h2>Travel made simple</h2>
+    </div>
+    <div class="row g-4 text-center">
+      <div class="col-md-3 col-6"><div class="feature"><i class="bi bi-shield-check"></i><h6>Best price promise</h6><p class="small text-muted">Transparent pricing with taxes shown upfront.</p></div></div>
+      <div class="col-md-3 col-6"><div class="feature"><i class="bi bi-lightning-charge"></i><h6>Instant confirmation</h6><p class="small text-muted">Your booking reference appears immediately.</p></div></div>
+      <div class="col-md-3 col-6"><div class="feature"><i class="bi bi-arrow-repeat"></i><h6>Free cancellation</h6><p class="small text-muted">Cancel any booking in one click from My Bookings.</p></div></div>
+      <div class="col-md-3 col-6"><div class="feature"><i class="bi bi-headset"></i><h6>24x7 support</h6><p class="small text-muted">We are one message away, any time of day.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section bg-soft">
+  <div class="container">
+    <div class="section-head text-center">
+      <span class="kicker">Testimonials</span>
+      <h2>Loved by travellers</h2>
+    </div>
+    <div id="reviewCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="testimonial">
+            <p>"Booked the Lake Pichola Grand in under two minutes. The view from our suite was unreal."</p>
+            <div class="who"><img src="https://i.pravatar.cc/80?img=47" alt="Ananya"><div><strong>Ananya S.</strong><br><small class="text-muted">Bengaluru</small></div></div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="testimonial">
+            <p>"Easy filters, honest photos and a very smooth cancellation when our plans changed."</p>
+            <div class="who"><img src="https://i.pravatar.cc/80?img=12" alt="Rohit"><div><strong>Rohit M.</strong><br><small class="text-muted">Pune</small></div></div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="testimonial">
+            <p>"The houseboat in Alleppey was the highlight of our family trip. Everything just worked."</p>
+            <div class="who"><img src="https://i.pravatar.cc/80?img=32" alt="Meera"><div><strong>Meera K.</strong><br><small class="text-muted">Chennai</small></div></div>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#reviewCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">Previous</span></button>
+      <button class="carousel-control-next" type="button" data-bs-target="#reviewCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">Next</span></button>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="container text-center text-white">
+    <h2 class="fw-bold">Ready for your next escape?</h2>
+    <p class="mb-4">Try the demo: book a room, then cancel it from My Bookings. Your data stays private to your session.</p>
+    <a href="{{ url_for('hotels') }}" class="btn btn-light btn-lg me-2">Browse hotels</a>
+    <a href="{{ url_for('demo') }}" class="btn btn-outline-light btn-lg">View session database</a>
+  </div>
+</section>
+{% endblock %}

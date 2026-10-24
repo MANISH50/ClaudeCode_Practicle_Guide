@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}My Bookings - StayVista{% endblock %}
+
+{% block content %}
+<section class="page-banner">
+  <div class="container">
+    <h1 class="fw-bold">My bookings</h1>
+    <p class="mb-0">Stored only in your private demo database ({{ bookings|length }} total).</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  {% if bookings %}
+  <div class="d-grid gap-3">
+    {% for b in bookings %}
+    <div class="booking-row {{ 'is-cancelled' if b['status'] == 'cancelled' }}">
+      <img src="{{ hotel_image({'id': b['hid'], 'image_tags': b['image_tags']}, 0, 360, 260) }}" alt="{{ b['hotel_name'] }}" loading="lazy" class="img-fade">
+      <div class="flex-grow-1">
+        <div class="d-flex flex-wrap justify-content-between gap-2">
+          <h5 class="mb-1"><a href="{{ url_for('hotel_detail', hotel_id=b['hid']) }}">{{ b['hotel_name'] }}</a></h5>
+          <span class="status status-{{ b['status'] }}">{{ b['status']|capitalize }}</span>
+        </div>
+        <p class="text-muted small mb-2"><i class="bi bi-geo-alt me-1"></i>{{ b['city'] }} &middot; Ref <strong>{{ b['ref'] }}</strong></p>
+        <p class="small mb-2">
+          <i class="bi bi-calendar-event me-1"></i>{{ pretty_date(b['check_in']) }} to {{ pretty_date(b['check_out']) }}
+          ({{ b['nights'] }} night{{ 's' if b['nights'] > 1 }}) &middot;
+          <i class="bi bi-door-open me-1"></i>{{ room_types[b['room_type']].label }} &middot;
+          <i class="bi bi-people me-1"></i>{{ b['guests'] }} guest{{ 's' if b['guests'] > 1 }}
+        </p>
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <span class="price">{{ money(b['total']) }}<small> total</small></span>
+          <div class="d-flex gap-2">
+            <a href="{{ url_for('booking_confirmation', ref=b['ref']) }}" class="btn btn-sm btn-outline-brand">View</a>
+            {% if b['status'] == 'confirmed' %}
+            <form action="{{ url_for('cancel_booking', ref=b['ref']) }}" method="post"
+                  onsubmit="return confirm('Cancel booking {{ b['ref'] }}?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-outline-danger" type="submit">Cancel</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state text-center">
+    <i class="bi bi-journal-x"></i>
+    <h4>No bookings yet</h4>
+    <p class="text-muted">Reserve a stay and it will show up here instantly.</p>
+    <a href="{{ url_for('hotels') }}" class="btn btn-brand">Browse hotels</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% from "_macros.html" import hotel_card %}
+{% block title %}Hotels - StayVista{% endblock %}
+
+{% block content %}
+<section class="page-banner">
+  <div class="container">
+    <h1 class="fw-bold">Find your stay</h1>
+    <p class="mb-0">{{ hotels|length }} propert{{ 'ies' if hotels|length != 1 else 'y' }} found
+      {% if city %}in <strong>{{ city }}</strong>{% endif %}</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <aside class="col-lg-3">
+      <form method="get" class="filter-card" id="filterForm">
+        <h5 class="fw-semibold mb-3"><i class="bi bi-sliders me-2"></i>Filters</h5>
+
+        <label class="form-label small fw-semibold" for="f-q">Search</label>
+        <input type="search" class="form-control mb-3" id="f-q" name="q" value="{{ q }}" placeholder="Hotel, city or type">
+
+        <label class="form-label small fw-semibold" for="f-city">Destination</label>
+        <select class="form-select mb-3" id="f-city" name="city">
+          <option value="">All destinations</option>
+          {% for c in cities %}<option value="{{ c }}" {{ 'selected' if c == city }}>{{ c }}</option>{% endfor %}
+        </select>
+
+        <label class="form-label small fw-semibold" for="f-cat">Type</label>
+        <select class="form-select mb-3" id="f-cat" name="category">
+          <option value="">All types</option>
+          {% for c in categories %}<option value="{{ c }}" {{ 'selected' if c == category }}>{{ c }}</option>{% endfor %}
+        </select>
+
+        <label class="form-label small fw-semibold d-flex justify-content-between" for="f-price">
+          <span>Max price / night</span><span class="text-brand" id="priceOut">{{ money(max_price) }}</span>
+        </label>
+        <input type="range" class="form-range mb-3" id="f-price" name="max_price" min="1000" max="20000" step="500" value="{{ max_price }}">
+
+        <label class="form-label small fw-semibold" for="f-rating">Minimum rating</label>
+        <select class="form-select mb-3" id="f-rating" name="min_rating">
+          {% for val, label in [('0', 'Any rating'), ('4', '4.0 and above'), ('4.5', '4.5 and above'), ('4.8', '4.8 and above')] %}
+            <option value="{{ val }}" {{ 'selected' if min_rating == val }}>{{ label }}</option>
+          {% endfor %}
+        </select>
+
+        <label class="form-label small fw-semibold" for="f-sort">Sort by</label>
+        <select class="form-select mb-3" id="f-sort" name="sort">
+          {% for val, label in [('popular', 'Most popular'), ('rating', 'Top rated'), ('price_asc', 'Price: low to high'), ('price_desc', 'Price: high to low')] %}
+            <option value="{{ val }}" {{ 'selected' if sort == val }}>{{ label }}</option>
+          {% endfor %}
+        </select>
+
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <label class="form-label small fw-semibold" for="f-in">Check-in</label>
+            <input type="date" class="form-control form-control-sm" id="f-in" name="check_in" value="{{ check_in }}" min="{{ today }}">
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold" for="f-out">Check-out</label>
+            <input type="date" class="form-control form-control-sm" id="f-out" name="check_out" value="{{ check_out }}" min="{{ today }}">
+          </div>
+        </div>
+        <input type="hidden" name="guests" value="{{ guests }}">
+
+        <button class="btn btn-brand w-100 mb-2" type="submit"><i class="bi bi-funnel me-1"></i>Apply filters</button>
+        <a href="{{ url_for('hotels') }}" class="btn btn-outline-secondary w-100 btn-sm">Clear all</a>
+      </form>
+    </aside>
+
+    <div class="col-lg-9">
+      {% if hotels %}
+      <div class="row g-4">
+        {% for h in hotels %}
+        <div class="col-md-6 col-xl-4">{{ hotel_card(h, wished, check_in, check_out) }}</div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state text-center">
+        <i class="bi bi-search"></i>
+        <h4>No hotels match your filters</h4>
+        <p class="text-muted">Try widening your price range or clearing some filters.</p>
+        <a href="{{ url_for('hotels') }}" class="btn btn-brand">Reset filters</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const price = document.getElementById('f-price');
+  const out = document.getElementById('priceOut');
+  price.addEventListener('input', () => { out.textContent = '₹' + Number(price.value).toLocaleString('en-IN'); });
+  ['f-city', 'f-cat', 'f-rating', 'f-sort'].forEach(id =>
+    document.getElementById(id).addEventListener('change', () => document.getElementById('filterForm').submit()));
+</script>
+{% endblock %}

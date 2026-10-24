@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Session Database - StayVista{% endblock %}
+
+{% block content %}
+<section class="page-banner">
+  <div class="container">
+    <h1 class="fw-bold">Your session database</h1>
+    <p class="mb-0">Every visitor gets an isolated SQLite file, created and seeded on first visit.</p>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row g-4 mb-4">
+    <div class="col-md-8">
+      <div class="booking-card h-100">
+        <h5 class="fw-semibold mb-3"><i class="bi bi-fingerprint me-2 text-brand"></i>Session details</h5>
+        <dl class="row mb-0 small">
+          <dt class="col-sm-4">Session ID</dt><dd class="col-sm-8"><code>{{ sid }}</code></dd>
+          <dt class="col-sm-4">Database file</dt><dd class="col-sm-8"><code>instance/sessions/{{ db_file }}</code></dd>
+          <dt class="col-sm-4">File size</dt><dd class="col-sm-8">{{ size_kb }} KB</dd>
+          <dt class="col-sm-4">Active sessions</dt><dd class="col-sm-8">{{ active_sessions }} (files older than 24 hours are removed automatically)</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="booking-card h-100 text-center">
+        <h5 class="fw-semibold mb-2">Start fresh</h5>
+        <p class="small text-muted">Deletes your bookings, saved hotels and messages, then re-seeds the demo data.</p>
+        <form action="{{ url_for('reset_demo') }}" method="post" onsubmit="return confirm('Reset all demo data for your session?');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-outline-danger" type="submit"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset demo data</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    {% for table, label, icon, link in [('hotels', 'Hotels', 'building', url_for('hotels')), ('bookings', 'Bookings', 'journal-check', url_for('my_bookings')), ('wishlist', 'Saved hotels', 'heart', url_for('wishlist')), ('messages', 'Messages', 'chat-dots', url_for('contact'))] %}
+    <div class="col-6 col-lg-3">
+      <a href="{{ link }}" class="count-card">
+        <i class="bi bi-{{ icon }}"></i>
+        <div class="num">{{ counts[table] }}</div>
+        <div class="small text-muted">{{ label }} <code>({{ table }})</code></div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="booking-card">
+    <h5 class="fw-semibold mb-3">Latest messages</h5>
+    {% if messages %}
+    <div class="table-responsive">
+      <table class="table table-sm align-middle mb-0">
+        <thead><tr><th>When</th><th>Name</th><th>Subject</th><th>Message</th></tr></thead>
+        <tbody>
+        {% for m in messages %}
+          <tr><td class="text-nowrap">{{ m['created_at'] }}</td><td>{{ m['name'] }}</td><td>{{ m['subject'] or '-' }}</td><td>{{ m['message'] }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <p class="text-muted mb-0">No messages yet. Send one from the <a href="{{ url_for('contact') }}">Contact page</a> and it will appear here.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

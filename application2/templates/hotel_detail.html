@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% from "_macros.html" import hotel_card, stars %}
+{% block title %}{{ hotel['name'] }} - StayVista{% endblock %}
+
+{% block content %}
+<div class="detail-top"></div>
+<div class="container pb-5">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('hotels') }}">Hotels</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('hotels', city=hotel['city']) }}">{{ hotel['city'] }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ hotel['name'] }}</li>
+    </ol>
+  </nav>
+
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+      <span class="badge category-badge static mb-2">{{ hotel['category'] }}</span>
+      <h1 class="fw-bold mb-1">{{ hotel['name'] }}</h1>
+      <p class="text-muted mb-0"><i class="bi bi-geo-alt-fill text-brand me-1"></i>{{ hotel['city'] }}, {{ hotel['state'] }}
+        <span class="ms-2 text-warning">{{ stars(hotel['stars']) }}</span></p>
+    </div>
+    <div class="text-end">
+      <span class="rating-pill lg"><i class="bi bi-star-fill"></i> {{ hotel['rating'] }}</span>
+      <div class="small text-muted mt-1">{{ '{:,}'.format(hotel['review_count']) }} reviews</div>
+      <button type="button" class="btn btn-sm btn-outline-brand mt-2 wish-btn-inline wish-btn {{ 'active' if wished }}" data-id="{{ hotel['id'] }}">
+        <i class="bi {{ 'bi-heart-fill' if wished else 'bi-heart' }} me-1"></i><span class="wish-label">{{ 'Saved' if wished else 'Save' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="gallery mb-5">
+    <a href="{{ hotel_image(hotel, 0, 1200, 800) }}" target="_blank" rel="noopener" class="g-main">
+      <img src="{{ hotel_image(hotel, 0, 1000, 700) }}" alt="{{ hotel['name'] }} main photo" class="img-fade">
+    </a>
+    {% for i in range(1, 5) %}
+    <a href="{{ hotel_image(hotel, i, 1200, 800) }}" target="_blank" rel="noopener" class="g-thumb">
+      <img src="{{ hotel_image(hotel, i, 500, 340) }}" alt="{{ hotel['name'] }} photo {{ i + 1 }}" loading="lazy" class="img-fade">
+    </a>
+    {% endfor %}
+  </div>
+
+  <div class="row g-5">
+    <div class="col-lg-7">
+      <h4 class="fw-semibold">{{ hotel['tagline'] }}</h4>
+      <p class="text-muted">{{ hotel['description'] }}</p>
+
+      <h5 class="fw-semibold mt-4 mb-3">Amenities</h5>
+      <div class="row g-2 mb-4">
+        {% set icons = {'Free WiFi': 'wifi', 'Pool': 'water', 'Spa': 'flower1', 'Gym': 'activity', 'Restaurant': 'cup-hot', 'Bar': 'cup-straw', 'Parking': 'p-square', 'Beach Access': 'umbrella', 'Airport Shuttle': 'airplane', 'AC': 'snow', 'Fireplace': 'fire', 'Yoga': 'peace', 'Concierge': 'bell', 'Pet Friendly': 'balloon-heart'} %}
+        {% for a in amenities %}
+        <div class="col-6 col-md-4"><div class="amenity"><i class="bi bi-{{ icons.get(a, 'check-circle') }}"></i>{{ a }}</div></div>
+        {% endfor %}
+      </div>
+
+      <h5 class="fw-semibold mb-3">Choose your room</h5>
+      <p class="small text-muted">Showing prices for {{ nights }} night{{ 's' if nights > 1 }}, {{ pretty_date(check_in) }} to {{ pretty_date(check_out) }}, taxes included.</p>
+      <div class="d-grid gap-3 mb-4">
+        {% for r in rooms %}
+        <div class="room-card {{ 'sold' if r.left == 0 }}">
+          <div class="room-icon"><i class="bi {{ r.info.icon }}"></i></div>
+          <div class="flex-grow-1">
+            <h6 class="mb-1">{{ r.info.label }}</h6>
+            <p class="small text-muted mb-1">{{ r.info.blurb }}</p>
+            <span class="chip"><i class="bi bi-people me-1"></i>Up to {{ r.info.max_guests }} guests</span>
+            {% if r.left == 0 %}<span class="chip chip-danger">Sold out</span>
+            {% elif r.left == 1 %}<span class="chip chip-warn">Only 1 left!</span>
+            {% else %}<span class="chip chip-ok">{{ r.left }} left</span>{% endif %}
+          </div>
+          <div class="text-end">
+            <div class="price">{{ money(r.per_night) }}<small>/night</small></div>
+            <div class="small text-muted">{{ money(r.total) }} total</div>
+            <button type="button" class="btn btn-sm btn-outline-brand mt-2 pick-room" data-room="{{ r.key }}" {{ 'disabled' if r.left == 0 }}>Select</button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <h5 class="fw-semibold mb-3">Location</h5>
+      <div class="ratio ratio-16x9 rounded-4 overflow-hidden shadow-sm">
+        <iframe title="Map of {{ hotel['city'] }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps?q={{ (hotel['name'] ~ ' ' ~ hotel['city'])|urlencode }}&output=embed"></iframe>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <form action="{{ url_for('book') }}" method="post" class="booking-card sticky-lg-top" id="bookingForm" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="hotel_id" value="{{ hotel['id'] }}">
+        <h5 class="fw-semibold mb-3">Reserve your stay</h5>
+
+        <div class="row g-2 mb-2">
+          <div class="col-6">
+            <label class="form-label small" for="b-in">Check-in</label>
+            <input type="date" class="form-control" id="b-in" name="check_in" value="{{ check_in }}" min="{{ today }}" required>
+          </div>
+          <div class="col-6">
+            <label class="form-label small" for="b-out">Check-out</label>
+            <input type="date" class="form-control" id="b-out" name="check_out" value="{{ check_out }}" min="{{ today }}" required>
+          </div>
+        </div>
+        <div class="row g-2 mb-2">
+          <div class="col-7">
+            <label class="form-label small" for="b-room">Room type</label>
+            <select class="form-select" id="b-room" name="room_type" required>
+              {% for key, info in room_types.items() %}<option value="{{ key }}">{{ info.label }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="col-5">
+            <label class="form-label small" for="b-guests">Guests</label>
+            <input type="number" class="form-control" id="b-guests" name="guests" min="1" max="4" value="{{ [guests, 2]|min }}" required>
+          </div>
+        </div>
+
+        <div class="quote-box my-3" id="quoteBox" aria-live="polite">
+          <div class="d-flex justify-content-between"><span id="q-label">Room x nights</span><span id="q-sub">-</span></div>
+          <div class="d-flex justify-content-between"><span>Taxes &amp; fees ({{ tax_rate }}%)</span><span id="q-tax">-</span></div>
+          <hr class="my-2">
+          <div class="d-flex justify-content-between fw-bold fs-5"><span>Total</span><span id="q-total" class="text-brand">-</span></div>
+          <div class="small mt-1" id="q-msg"></div>
+        </div>
+
+        <hr>
+        <h6 class="fw-semibold mb-2">Guest details</h6>
+        <div class="mb-2">
+          <label class="form-label small" for="b-name">Full name</label>
+          <input type="text" class="form-control" id="b-name" name="guest_name" minlength="2" required placeholder="As on your ID">
+        </div>
+        <div class="row g-2 mb-2">
+          <div class="col-md-7">
+            <label class="form-label small" for="b-email">Email</label>
+            <input type="email" class="form-control" id="b-email" name="email" required placeholder="you@example.com">
+          </div>
+          <div class="col-md-5">
+            <label class="form-label small" for="b-phone">Phone</label>
+            <input type="tel" class="form-control" id="b-phone" name="phone" pattern="[0-9+\-\s]{7,15}" required placeholder="98765 43210">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small" for="b-req">Special requests <span class="text-muted">(optional)</span></label>
+          <textarea class="form-control" id="b-req" name="requests" rows="2" maxlength="500" placeholder="Late check-in, extra bed..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-brand btn-lg w-100" id="bookBtn"><i class="bi bi-calendar2-check me-2"></i>Confirm booking</button>
+        <p class="small text-muted text-center mt-2 mb-0"><i class="bi bi-shield-lock me-1"></i>Demo only. No payment is taken.</p>
+      </form>
+    </div>
+  </div>
+
+  {% if similar %}
+  <h4 class="fw-semibold mt-5 mb-3">You may also like</h4>
+  <div class="row g-4">
+    {% for h in similar %}<div class="col-lg-4 col-md-6">{{ hotel_card(h, [], check_in, check_out) }}</div>{% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.BOOKING = { hotelId: {{ hotel['id'] }}, quoteUrl: "{{ url_for('api_quote') }}" };
+</script>
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

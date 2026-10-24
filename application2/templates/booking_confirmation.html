@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Booking {{ booking['ref'] }} - StayVista{% endblock %}
+
+{% block content %}
+<div class="detail-top"></div>
+<div class="container pb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="confirm-card" id="ticket">
+        <div class="confirm-head text-center">
+          <div class="tick"><i class="bi bi-check-lg"></i></div>
+          <h2 class="fw-bold mb-1">{{ 'Booking cancelled' if booking['status'] == 'cancelled' else 'Booking confirmed!' }}</h2>
+          <p class="mb-0">A confirmation for <strong>{{ booking['email'] }}</strong> would be sent in a real deployment.</p>
+          <div class="ref-badge mt-3">Reference <strong>{{ booking['ref'] }}</strong></div>
+        </div>
+
+        <div class="p-4">
+          <div class="row g-4 align-items-center">
+            <div class="col-md-5">
+              <img src="{{ hotel_image({'id': booking['hid'], 'image_tags': booking['image_tags']}, 0, 600, 420) }}"
+                   alt="{{ booking['hotel_name'] }}" class="rounded-4 w-100 img-fade">
+            </div>
+            <div class="col-md-7">
+              <h4 class="fw-semibold mb-1">{{ booking['hotel_name'] }}</h4>
+              <p class="text-muted"><i class="bi bi-geo-alt-fill text-brand me-1"></i>{{ booking['city'] }}, {{ booking['state'] }}</p>
+              <span class="status status-{{ booking['status'] }}">{{ booking['status']|capitalize }}</span>
+            </div>
+          </div>
+
+          <hr class="my-4">
+          <div class="row g-3 detail-grid">
+            <div class="col-6 col-md-3"><small>Check-in</small><strong>{{ pretty_date(booking['check_in']) }}</strong></div>
+            <div class="col-6 col-md-3"><small>Check-out</small><strong>{{ pretty_date(booking['check_out']) }}</strong></div>
+            <div class="col-6 col-md-3"><small>Nights</small><strong>{{ booking['nights'] }}</strong></div>
+            <div class="col-6 col-md-3"><small>Guests</small><strong>{{ booking['guests'] }}</strong></div>
+            <div class="col-6 col-md-3"><small>Room</small><strong>{{ room_types[booking['room_type']].label }}</strong></div>
+            <div class="col-6 col-md-3"><small>Guest</small><strong>{{ booking['guest_name'] }}</strong></div>
+            <div class="col-6 col-md-3"><small>Phone</small><strong>{{ booking['phone'] }}</strong></div>
+            <div class="col-6 col-md-3"><small>Booked on</small><strong>{{ booking['created_at'] }}</strong></div>
+            {% if booking['requests'] %}<div class="col-12"><small>Special requests</small><strong>{{ booking['requests'] }}</strong></div>{% endif %}
+          </div>
+
+          <div class="quote-box mt-4">
+            <div class="d-flex justify-content-between"><span>Room charges</span><span>{{ money(booking['subtotal']) }}</span></div>
+            <div class="d-flex justify-content-between"><span>Taxes &amp; fees</span><span>{{ money(booking['tax']) }}</span></div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between fw-bold fs-5"><span>Total</span><span class="text-brand">{{ money(booking['total']) }}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2 justify-content-center mt-4 no-print">
+        <button class="btn btn-outline-brand" onclick="window.print()"><i class="bi bi-printer me-1"></i>Print</button>
+        <a href="{{ url_for('my_bookings') }}" class="btn btn-brand"><i class="bi bi-journal-check me-1"></i>My bookings</a>
+        <a href="{{ url_for('hotels') }}" class="btn btn-outline-secondary">Book another stay</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
