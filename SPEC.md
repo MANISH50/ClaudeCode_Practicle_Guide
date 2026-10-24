@@ -394,6 +394,8 @@ Recommended routes for version 1:
 | `/notes/[id]` | Owner only | View and edit a note |
 | `/share/[token]` | Public, valid token only | Read-only shared note |
 
+**Current status:** all routes above exist. `/sign-in` and `/sign-up` are working forms, and `/notes/*` is protected by a session check in `app/notes/layout.tsx` (redirects to `/sign-in`). The other pages are still placeholders. Implementation: `lib/db.ts` (exports `db`; opens the SQLite file in WAL mode with `foreign_keys=ON`, `busy_timeout`, and creates the `note` table and index), `lib/auth.ts` (Better Auth, email and password, `nextCookies`), `lib/auth-client.ts`, and `app/api/auth/[...all]/route.ts`. The Better Auth tables are created with `bun run auth:migrate`. Scripts run through `bun --bun` because `bun:sqlite` does not work under Node. Email verification and password reset are not enabled. Each note route must still check the session itself, since layouts do not re-run on every request. The note editor placeholder (`/notes/[id]`) includes a stub "Share publicly" line that will generate the `/share/{token}` URL once sharing is built (section 3.4).
+
 Better Auth may use its own configured authentication endpoint. Keep those endpoints consistent with its supported integration rather than duplicating authentication logic in custom routes.
 
 ---
