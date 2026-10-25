@@ -11,6 +11,10 @@ We are building the application defined in `@SPEC.md`.
 
 Prioritize correctness, consistency, and minimal token usage.
 
+Whenever you working with third party liobraray or something similar you must lookup to the official documentation
+to ensure that you are working in a uptodate information.
+Use the DocsExplorer agents for efficient docuemnt lookup.
+
 ## Repository layout
 
 The project is the root Next.js app (`app/`, `package.json`, `tsconfig.json`, ...): Next.js 16 App Router, React 19, Tailwind CSS 4, TypeScript, Bun (`bun.lock`). It is still the `create-next-app` template: `app/page.tsx` is stock content and `app/layout.tsx` metadata still says "Create Next App".
@@ -38,3 +42,21 @@ There is no test script and no test framework configured.
 - `tsconfig.json` defines the `@/*` path alias (currently unused).
 - `.env.example` lists `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` and `DATABASE_PATH`. Copy it to `.env.local`. Auth and the database layer (`lib/auth.ts`, `lib/db.ts`) are built. The editor, note CRUD, and sharing are not.
 - Bun is installed. Scripts use `bun --bun` (needed for `bun:sqlite`). Run `bun run auth:migrate` to create the Better Auth tables.
+
+## Quality Gate: End-to-End Verification
+
+After ANY code change, bug fix, or new feature, and before telling me the work is done, you MUST invoke the `test-end-to-end-functionality` subagent.
+
+Workflow:
+1. Finish the change and run lint, typecheck, and unit tests yourself first.
+2. Invoke `test-end-to-end-functionality`. Tell it what you changed (files and feature) so it can scope the run.
+3. Read its report. Fix EVERY open item, starting with Critical and High. Do not ask me for permission or wait for me to prompt each fix.
+4. Invoke the agent again to re-verify. Repeat steps 3-4 until the verdict is READY.
+5. Only then give me a final summary: what changed, what the agent verified, and anything it could not verify.
+
+Rules:
+- Never mark work as done while the verdict is NOT READY.
+- If an item looks like a false positive or needs a product decision, explain it to me instead of silently ignoring it.
+- If the agent reports flaky tests, treat that as a bug to fix, not noise.
+- Skip the agent only for changes that cannot affect behaviour (docs, comments, formatting). Say that you are skipping and why.
+- Do not edit or weaken tests to make them pass. Fix the code.

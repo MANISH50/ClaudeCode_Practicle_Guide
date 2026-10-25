@@ -65,7 +65,15 @@ Users must authenticate before accessing the note-management features.
 - Unauthenticated users attempting to access protected pages are redirected to the sign-in page.
 - Users can access only notes they own, unless they are viewing a publicly shared note.
 
-Use Better Auth's supported password authentication and session features. Email verification and password-reset flows should be included if the deployment environment supports the required email delivery configuration. Both flows use the `verification` table.
+Use Better Auth's supported password authentication and session features. Only email and password are supported. Email verification and password reset are out of scope for this demo app, so the `verification` table is unused.
+
+**Auth page behaviour**
+
+- `/sign-in` serves both modes. `?mode=sign-in` (default) or `?mode=sign-up` selects the mode. Switching modes is a link that changes only the search param.
+- `/sign-up` redirects to `/sign-in?mode=sign-up`, keeping any `callbackUrl`.
+- After successful sign-in or sign-up, users go to `/dashboard`, or to `callbackUrl` when it is set.
+- `callbackUrl` is optional. Only same-origin relative paths (`/...`) are honoured; anything else falls back to `/dashboard`.
+- Signed-in users opening `/sign-in` are redirected to the same destination.
 
 ### 3.2 Note management
 
@@ -389,12 +397,13 @@ Recommended routes for version 1:
 | `/` | Public | Landing page or redirect |
 | `/sign-in` | Public | User sign-in |
 | `/sign-up` | Public | Account registration |
+| `/dashboard` | Authenticated | Post-login landing page |
 | `/notes` | Authenticated | List user's notes |
 | `/notes/new` | Authenticated | Create a note |
 | `/notes/[id]` | Owner only | View and edit a note |
 | `/share/[token]` | Public, valid token only | Read-only shared note |
 
-**Current status:** all routes above exist. `/sign-in` and `/sign-up` are working forms, and `/notes/*` is protected by a session check in `app/notes/layout.tsx` (redirects to `/sign-in`). The other pages are still placeholders. Implementation: `lib/db.ts` (exports `db`; opens the SQLite file in WAL mode with `foreign_keys=ON`, `busy_timeout`, and creates the `note` table and index), `lib/auth.ts` (Better Auth, email and password, `nextCookies`), `lib/auth-client.ts`, and `app/api/auth/[...all]/route.ts`. The Better Auth tables are created with `bun run auth:migrate`. Scripts run through `bun --bun` because `bun:sqlite` does not work under Node. Email verification and password reset are not enabled. Each note route must still check the session itself, since layouts do not re-run on every request. The note editor placeholder (`/notes/[id]`) includes a stub "Share publicly" line that will generate the `/share/{token}` URL once sharing is built (section 3.4).
+**Current status:** all routes above exist. `/sign-in` is the combined sign-in and sign-up page (section 3.1), and `/sign-up` redirects to it. `/dashboard` and `/notes/*` are protected per route, not by a layout. `proxy.ts` does an optimistic session-cookie check and redirects to `/sign-in?callbackUrl=...`. Each protected page then calls `requireSession(path)` from `lib/session.ts` (cached `auth.api.getSession`, authoritative). `/share/[token]` is public. The header with the signed-in email and sign-out button is `app/notes/notes-shell.tsx`. The other pages are still placeholders. Implementation: `lib/db.ts` (exports `db`; opens the SQLite file in WAL mode with `foreign_keys=ON`, `busy_timeout`, and creates the `note` table and index), `lib/auth.ts` (Better Auth, email and password, `nextCookies`), `lib/auth-client.ts`, `lib/safe-redirect.ts` (validates `callbackUrl`), and `app/api/auth/[...all]/route.ts`. The Better Auth tables are created with `bun run auth:migrate`. Scripts run through `bun --bun` because `bun:sqlite` does not work under Node. Email verification and password reset are not enabled. Every protected page must call `requireSession` itself. The note editor placeholder (`/notes/[id]`) includes a stub "Share publicly" line that will generate the `/share/{token}` URL once sharing is built (section 3.4).
 
 Better Auth may use its own configured authentication endpoint. Keep those endpoints consistent with its supported integration rather than duplicating authentication logic in custom routes.
 
