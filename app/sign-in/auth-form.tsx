@@ -3,13 +3,16 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Spinner } from "@/app/spinner";
+import { buttonPrimaryLarge, errorText, fieldClass, focusRing, heading } from "@/app/ui";
 import { authClient } from "@/lib/auth-client";
 
 export type AuthMode = "sign-in" | "sign-up";
 
 const copy = {
   "sign-in": {
-    heading: "Sign in",
+    heading: "Welcome back",
+    tagline: "Sign in to pick up where you left off.",
     submit: "Sign in",
     pending: "Signing in…",
     switchText: "No account?",
@@ -17,7 +20,8 @@ const copy = {
     switchMode: "sign-up",
   },
   "sign-up": {
-    heading: "Create account",
+    heading: "Create your account",
+    tagline: "Start writing beautiful notes in seconds.",
     submit: "Sign up",
     pending: "Creating account…",
     switchText: "Already registered?",
@@ -25,9 +29,6 @@ const copy = {
     switchMode: "sign-in",
   },
 } as const satisfies Record<AuthMode, unknown>;
-
-const fieldClass =
-  "rounded-md border border-neutral-300 bg-white px-3 py-2 text-neutral-900 placeholder:text-neutral-500 outline-none focus-visible:ring-2 focus-visible:ring-neutral-900";
 
 export function AuthForm({ mode, redirectTo }: { mode: AuthMode; redirectTo: string }) {
   const router = useRouter();
@@ -55,6 +56,12 @@ export function AuthForm({ mode, redirectTo }: { mode: AuthMode; redirectTo: str
       return;
     }
 
+    if (mode === "sign-up") {
+      // No session is created at sign-up (autoSignIn is off), so send the user to sign in.
+      router.replace(`/sign-in?created=1&callbackUrl=${encodeURIComponent(redirectTo)}`);
+      return;
+    }
+
     router.replace(redirectTo);
     router.refresh();
   }
@@ -63,18 +70,20 @@ export function AuthForm({ mode, redirectTo }: { mode: AuthMode; redirectTo: str
 
   return (
     <>
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold text-balance">{text.heading}</h1>
+      <header className="flex flex-col gap-2 text-center">
+        <h1 className={`text-4xl ${heading}`}>{text.heading}</h1>
+        <p className="text-muted">{text.tagline}</p>
       </header>
 
-      <form onSubmit={onSubmit} aria-busy={pending} className="flex flex-col gap-4">
+      <form onSubmit={onSubmit} aria-busy={pending} className="flex flex-col gap-5">
         {mode === "sign-up" && (
-          <label className="flex flex-col gap-1 text-sm font-medium">
+          <label className="flex flex-col gap-2 font-medium">
             Name
             <input
               name="name"
               type="text"
               autoComplete="name"
+              maxLength={100}
               required
               className={fieldClass}
               aria-describedby={error ? "auth-error" : undefined}
@@ -82,7 +91,7 @@ export function AuthForm({ mode, redirectTo }: { mode: AuthMode; redirectTo: str
           </label>
         )}
 
-        <label className="flex flex-col gap-1 text-sm font-medium">
+        <label className="flex flex-col gap-2 font-medium">
           Email
           <input
             name="email"
@@ -94,7 +103,7 @@ export function AuthForm({ mode, redirectTo }: { mode: AuthMode; redirectTo: str
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-sm font-medium">
+        <label className="flex flex-col gap-2 font-medium">
           Password
           <input
             name="password"
@@ -108,14 +117,14 @@ export function AuthForm({ mode, redirectTo }: { mode: AuthMode; redirectTo: str
             }
           />
           {mode === "sign-up" && (
-            <span id="password-hint" className="font-normal text-neutral-600">
+            <span id="password-hint" className="text-[0.9rem] font-normal text-muted">
               At least 8 characters.
             </span>
           )}
         </label>
 
         {error && (
-          <p id="auth-error" role="alert" className="text-sm text-red-700">
+          <p id="auth-error" role="alert" className={`animate-fade-in ${errorText}`}>
             {error}
           </p>
         )}
@@ -123,15 +132,16 @@ export function AuthForm({ mode, redirectTo }: { mode: AuthMode; redirectTo: str
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-neutral-900 px-3 py-2 font-medium text-white outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 disabled:opacity-50"
+          className={`mt-2 w-full ${buttonPrimaryLarge}`}
         >
+          {pending && <Spinner />}
           {pending ? text.pending : text.submit}
         </button>
       </form>
 
-      <p className="text-sm text-neutral-700">
+      <p className="text-center text-muted">
         {text.switchText}{" "}
-        <Link href={switchHref} className="font-medium underline underline-offset-4">
+        <Link href={switchHref} className={`rounded-sm font-medium text-accent underline-offset-4 hover:underline ${focusRing}`}>
           {text.switchLabel}
         </Link>
       </p>
