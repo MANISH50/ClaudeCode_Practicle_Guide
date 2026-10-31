@@ -12,10 +12,10 @@ export function NotesShell({ userId, children }: { userId: string; children: Rea
 
   return (
     <div className="mx-auto flex max-w-6xl gap-10 px-4 sm:px-6">
-      {/* Soft violet glow behind the top of the page */}
+      {/* Soft lamp-light glow behind the top of the page */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(60%_50%_at_50%_0%,rgb(139_92_246/0.14),transparent)]"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(60%_50%_at_50%_0%,rgb(234_88_12/0.14),transparent)]"
       />
 
       <nav

@@ -42,3 +42,13 @@ next-env.d.ts
 
 # sqlite database
 /data/
+
+# Prettier hook run log (.claude/hooks/format.ts)
+/.claude/hooks/format.log
+
+# E2E agent run state and Playwright MCP output
+.claude/e2e/
+.playwright-mcp/
+
+# E2E dependencies
+/e2e/node_modules/

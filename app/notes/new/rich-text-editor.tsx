@@ -9,14 +9,14 @@ const EDITOR_CLASS = [
   "[&>*+*]:mt-3",
   "[&_:is(h1,h2,h3)]:font-display [&_:is(h1,h2,h3)]:font-semibold [&_:is(h1,h2,h3)]:leading-tight [&_h1]:text-3xl [&_h2]:text-2xl [&_h3]:text-xl",
   "[&_ul]:list-disc [&_ul]:pl-6",
-  "[&_code]:rounded-md [&_code]:bg-violet-500/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_code]:text-accent",
+  "[&_code]:rounded-md [&_code]:bg-orange-600/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_code]:text-accent",
   "[&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-border [&_pre]:bg-foreground/[0.04] [&_pre]:p-4 [&_pre]:text-[0.9rem]",
   "[&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-foreground",
   "[&_hr]:my-4 [&_hr]:border-border",
 ].join(" ");
 
 const toolbarButtonClass =
-  "min-w-9 rounded-lg px-2.5 py-1.5 text-[0.95rem] font-medium outline-none transition duration-150 hover:bg-violet-500/10 active:scale-90 focus-visible:ring-2 focus-visible:ring-violet-500 aria-pressed:bg-linear-to-br aria-pressed:from-indigo-600 aria-pressed:to-violet-600 aria-pressed:text-white aria-pressed:shadow-sm";
+  "min-w-9 rounded-lg px-2.5 py-1.5 text-[0.95rem] font-medium outline-none transition duration-150 hover:bg-orange-600/10 active:scale-90 focus-visible:ring-2 focus-visible:ring-orange-600 aria-pressed:bg-linear-to-br aria-pressed:from-orange-700 aria-pressed:to-orange-800 aria-pressed:text-white aria-pressed:shadow-sm";
 
 type RichTextEditorProps = {
   labelId: string;
@@ -55,7 +55,7 @@ export function RichTextEditor({ labelId, describedById, invalid, initialDoc, on
   return (
     <div
       data-invalid={invalid || undefined}
-      className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[inset_0_1px_2px_rgb(0_0_0/0.03)] transition duration-200 focus-within:border-violet-500 focus-within:ring-4 focus-within:ring-violet-500/20 data-invalid:border-red-500"
+      className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[inset_0_1px_2px_rgb(0_0_0/0.03)] transition duration-200 focus-within:border-orange-600 focus-within:ring-4 focus-within:ring-orange-600/20 data-invalid:border-red-500"
     >
       {editor ? (
         <>

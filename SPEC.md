@@ -1,6 +1,6 @@
 # Technical Specification: Note Taking Web App
 
-*Version 1.0 · Draft for implementation*
+_Version 1.0 · Draft for implementation_
 
 This specification is a foundation for implementation, whether you build it by hand or with an AI coding assistant. It keeps the chosen stack (Next.js, Bun, TypeScript, Tailwind CSS, Better Auth, TipTap, and SQLite) and defines practical defaults for features that have not been specified yet.
 
@@ -33,17 +33,17 @@ The application will provide a lightweight rich-text editing experience with ess
 
 ## 2. Technology stack
 
-| Component | Technology | Purpose |
-| --- | --- | --- |
-| Web framework | Next.js with App Router | Pages, routing, server rendering, server-side logic |
-| Runtime and package manager | Bun | Dependency management and runtime |
-| Language | TypeScript | Type safety |
-| Styling | Tailwind CSS | Responsive UI |
-| Authentication | Better Auth | Sign-up, sign-in, session management; owns the `user`, `session`, `account`, and `verification` tables |
-| Rich-text editor | TipTap | Editing and formatting notes |
-| Database | SQLite | Persistent application data, shared by Better Auth and the application |
-| Database access | Bun SQLite API (`bun:sqlite`) with raw SQL | Application queries and mutations; the same `Database` instance type is passed to Better Auth |
-| Validation | Zod | Validate requests and input data |
+| Component                   | Technology                                 | Purpose                                                                                                |
+| --------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| Web framework               | Next.js with App Router                    | Pages, routing, server rendering, server-side logic                                                    |
+| Runtime and package manager | Bun                                        | Dependency management and runtime                                                                      |
+| Language                    | TypeScript                                 | Type safety                                                                                            |
+| Styling                     | Tailwind CSS                               | Responsive UI                                                                                          |
+| Authentication              | Better Auth                                | Sign-up, sign-in, session management; owns the `user`, `session`, `account`, and `verification` tables |
+| Rich-text editor            | TipTap                                     | Editing and formatting notes                                                                           |
+| Database                    | SQLite                                     | Persistent application data, shared by Better Auth and the application                                 |
+| Database access             | Bun SQLite API (`bun:sqlite`) with raw SQL | Application queries and mutations; the same `Database` instance type is passed to Better Auth          |
+| Validation                  | Zod                                        | Validate requests and input data                                                                       |
 
 > **Implementation note:** Use Bun's SQLite API for database operations in the server runtime. Verify compatibility between the chosen Next.js deployment environment and Bun's native SQLite module before deployment. If using a conventional Node.js hosting environment, the database access layer may need an alternative SQLite driver.
 
@@ -79,13 +79,13 @@ Use Better Auth's supported password authentication and session features. Only e
 
 Authenticated users can perform the following operations:
 
-| Operation | Expected behavior |
-| --- | --- |
-| Create | Create a new note and save its content |
-| Read | View notes belonging to the signed-in user |
-| Update | Edit and save an existing note |
-| Delete | Permanently delete a note |
-| List | Display the user's notes, most recently updated first |
+| Operation | Expected behavior                                     |
+| --------- | ----------------------------------------------------- |
+| Create    | Create a new note and save its content                |
+| Read      | View notes belonging to the signed-in user            |
+| Update    | Edit and save an existing note                        |
+| Delete    | Permanently delete a note                             |
+| List      | Display the user's notes, most recently updated first |
 
 Each note must belong to exactly one user.
 
@@ -107,13 +107,13 @@ TipTap will provide the editing experience.
 
 **Supported editor features**
 
-| Feature | Description |
-| --- | --- |
-| Bold and italic | Emphasize selected text. |
-| Headings and normal text | Three heading levels (H1, H2, H3), plus paragraphs. |
-| Inline code and code blocks | Display code within text or in a separate block. |
-| Bullet lists | Create and edit unordered lists. |
-| Horizontal separators | Separate sections visually. |
+| Feature                     | Description                                         |
+| --------------------------- | --------------------------------------------------- |
+| Bold and italic             | Emphasize selected text.                            |
+| Headings and normal text    | Three heading levels (H1, H2, H3), plus paragraphs. |
+| Inline code and code blocks | Display code within text or in a separate block.    |
+| Bullet lists                | Create and edit unordered lists.                    |
+| Horizontal separators       | Separate sections visually.                         |
 
 **Editor implementation requirements**
 
@@ -153,6 +153,8 @@ A user can make an individual note publicly accessible and later revoke access.
 - Avoid caching public responses in a way that allows revoked content to remain accessible.
 
 A shared note should be accessible through a route such as `/share/{token}`. The token should be generated using a cryptographically secure random generator, not a predictable sequence.
+
+**Implementation:** the owner sees a "Public link" panel on `/notes/[id]` (`app/notes/[id]/share-control.tsx`) with **Share publicly**, **Copy link** and **Stop sharing**. `setSharingAction` (`app/notes/[id]/share-actions.ts`) re-checks the session and calls `enableSharing` or `disableSharing` in `lib/notes.ts`, both scoped to the owner. Enabling sets `is_public = 1` and stores a token of 32 random bytes encoded as base64url (43 characters) in `note.share_token`. Enabling an already shared note keeps its token. Stopping sets `is_public = 0` and clears the token, so the old link returns 404, and enabling again issues a new token. `/share/[token]` (`app/share/[token]/page.tsx`) is dynamic and `noindex`. `getSharedNote` accepts only a well-formed token that belongs to a currently shared note. The page renders the saved TipTap JSON read-only with React elements (`shared-note-content.tsx`, no raw HTML), showing the title, the last-updated time and the content, and no account details. Edits to a shared note appear on the next request.
 
 ---
 
@@ -202,13 +204,13 @@ export const auth = betterAuth({
 
 The database contains five tables: four owned by Better Auth and one owned by the application.
 
-| Table | Owner | Purpose |
-| --- | --- | --- |
-| `user` | Better Auth | One row per registered person |
-| `session` | Better Auth | Active sign-in sessions |
-| `account` | Better Auth | Authentication methods linked to a user (holds the password hash) |
-| `verification` | Better Auth | Short-lived tokens for email verification and password reset |
-| `note` | Application | Notes written by users |
+| Table          | Owner       | Purpose                                                           |
+| -------------- | ----------- | ----------------------------------------------------------------- |
+| `user`         | Better Auth | One row per registered person                                     |
+| `session`      | Better Auth | Active sign-in sessions                                           |
+| `account`      | Better Auth | Authentication methods linked to a user (holds the password hash) |
+| `verification` | Better Auth | Short-lived tokens for email verification and password reset      |
+| `note`         | Application | Notes written by users                                            |
 
 ```mermaid
 erDiagram
@@ -265,63 +267,63 @@ Better Auth requires the following tables and columns. Do not create conflicting
 
 #### `user`
 
-| Field | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `id` | string | Yes | Primary key |
-| `name` | string | Yes | Display name, collected at sign-up |
-| `email` | string | Yes | Unique |
-| `emailVerified` | boolean | Yes | Defaults to `false` |
-| `image` | string | No | Profile image URL |
-| `createdAt` | date | Yes | Set on creation |
-| `updatedAt` | date | Yes | Updated on every change |
+| Field           | Type    | Required | Notes                              |
+| --------------- | ------- | -------- | ---------------------------------- |
+| `id`            | string  | Yes      | Primary key                        |
+| `name`          | string  | Yes      | Display name, collected at sign-up |
+| `email`         | string  | Yes      | Unique                             |
+| `emailVerified` | boolean | Yes      | Defaults to `false`                |
+| `image`         | string  | No       | Profile image URL                  |
+| `createdAt`     | date    | Yes      | Set on creation                    |
+| `updatedAt`     | date    | Yes      | Updated on every change            |
 
 The `user` table holds no password. Credentials live in `account`.
 
 #### `session`
 
-| Field | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `id` | string | Yes | Primary key |
-| `expiresAt` | date | Yes | When the session ends |
-| `token` | string | Yes | Unique session token |
-| `createdAt` | date | Yes | Set on creation |
-| `updatedAt` | date | Yes | Updated on every change |
-| `ipAddress` | string | No | Client IP address |
-| `userAgent` | string | No | Client user agent |
-| `userId` | string | Yes | Foreign key to `user.id`, `ON DELETE CASCADE`, indexed |
+| Field       | Type   | Required | Notes                                                  |
+| ----------- | ------ | -------- | ------------------------------------------------------ |
+| `id`        | string | Yes      | Primary key                                            |
+| `expiresAt` | date   | Yes      | When the session ends                                  |
+| `token`     | string | Yes      | Unique session token                                   |
+| `createdAt` | date   | Yes      | Set on creation                                        |
+| `updatedAt` | date   | Yes      | Updated on every change                                |
+| `ipAddress` | string | No       | Client IP address                                      |
+| `userAgent` | string | No       | Client user agent                                      |
+| `userId`    | string | Yes      | Foreign key to `user.id`, `ON DELETE CASCADE`, indexed |
 
 #### `account`
 
 An account represents one authentication method linked to a user. Better Auth recognizes the provider-side identity by the pair of `providerId` and `accountId`, while `id` identifies the local account row. Use `id` when an account API asks for an `accountId`.
 
-| Field | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `id` | string | Yes | Primary key |
-| `accountId` | string | Yes | Identity at the provider |
-| `providerId` | string | Yes | Provider name (`credential` for email and password) |
-| `userId` | string | Yes | Foreign key to `user.id`, `ON DELETE CASCADE`, indexed |
-| `accessToken` | string | No | OAuth only |
-| `refreshToken` | string | No | OAuth only |
-| `idToken` | string | No | OAuth only |
-| `accessTokenExpiresAt` | date | No | OAuth only |
-| `refreshTokenExpiresAt` | date | No | OAuth only |
-| `scope` | string | No | OAuth only |
-| `password` | string | No | Hashed password, used by the `credential` provider |
-| `createdAt` | date | Yes | Set on creation |
-| `updatedAt` | date | Yes | Updated on every change |
+| Field                   | Type   | Required | Notes                                                  |
+| ----------------------- | ------ | -------- | ------------------------------------------------------ |
+| `id`                    | string | Yes      | Primary key                                            |
+| `accountId`             | string | Yes      | Identity at the provider                               |
+| `providerId`            | string | Yes      | Provider name (`credential` for email and password)    |
+| `userId`                | string | Yes      | Foreign key to `user.id`, `ON DELETE CASCADE`, indexed |
+| `accessToken`           | string | No       | OAuth only                                             |
+| `refreshToken`          | string | No       | OAuth only                                             |
+| `idToken`               | string | No       | OAuth only                                             |
+| `accessTokenExpiresAt`  | date   | No       | OAuth only                                             |
+| `refreshTokenExpiresAt` | date   | No       | OAuth only                                             |
+| `scope`                 | string | No       | OAuth only                                             |
+| `password`              | string | No       | Hashed password, used by the `credential` provider     |
+| `createdAt`             | date   | Yes      | Set on creation                                        |
+| `updatedAt`             | date   | Yes      | Updated on every change                                |
 
 Version 1 supports email and password only. Each user therefore has exactly one `account` row with `providerId` set to `credential`, the user's stable `id` as `accountId`, and the password hash in `password`. The OAuth columns stay empty unless social sign-in is added later.
 
 #### `verification`
 
-| Field | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `id` | string | Yes | Primary key |
-| `identifier` | string | Yes | What is being verified, such as an email address; indexed |
-| `value` | string | Yes | The verification value or token |
-| `expiresAt` | date | Yes | When the token stops being valid |
-| `createdAt` | date | Yes | Set on creation |
-| `updatedAt` | date | Yes | Updated on every change |
+| Field        | Type   | Required | Notes                                                     |
+| ------------ | ------ | -------- | --------------------------------------------------------- |
+| `id`         | string | Yes      | Primary key                                               |
+| `identifier` | string | Yes      | What is being verified, such as an email address; indexed |
+| `value`      | string | Yes      | The verification value or token                           |
+| `expiresAt`  | date   | Yes      | When the token stops being valid                          |
+| `createdAt`  | date   | Yes      | Set on creation                                           |
+| `updatedAt`  | date   | Yes      | Updated on every change                                   |
 
 Rows are created and removed by Better Auth during email verification and password-reset flows.
 
@@ -331,16 +333,16 @@ Version 1 needs no extra user fields. If one is added later, declare it with `us
 
 ### 5.2 Notes table
 
-| Column | Type | Description |
-| --- | --- | --- |
-| `id` | TEXT, primary key | Unique note identifier |
-| `user_id` | TEXT, foreign key | Owner's user ID, references `user(id)` |
-| `title` | TEXT, nullable | Optional note title |
-| `content` | TEXT | TipTap JSON serialized as text |
-| `is_public` | INTEGER | Public-sharing status, default 0 |
-| `share_token` | TEXT, nullable, unique | Public sharing token |
-| `created_at` | TEXT | Creation timestamp in UTC |
-| `updated_at` | TEXT | Last update timestamp in UTC |
+| Column        | Type                   | Description                            |
+| ------------- | ---------------------- | -------------------------------------- |
+| `id`          | TEXT, primary key      | Unique note identifier                 |
+| `user_id`     | TEXT, foreign key      | Owner's user ID, references `user(id)` |
+| `title`       | TEXT, nullable         | Optional note title                    |
+| `content`     | TEXT                   | TipTap JSON serialized as text         |
+| `is_public`   | INTEGER                | Public-sharing status, default 0       |
+| `share_token` | TEXT, nullable, unique | Public sharing token                   |
+| `created_at`  | TEXT                   | Creation timestamp in UTC              |
+| `updated_at`  | TEXT                   | Last update timestamp in UTC           |
 
 **Recommended constraints and indexes**
 
@@ -368,15 +370,11 @@ Example:
     {
       "type": "heading",
       "attrs": { "level": 1 },
-      "content": [
-        { "type": "text", "text": "My First Note" }
-      ]
+      "content": [{ "type": "text", "text": "My First Note" }]
     },
     {
       "type": "paragraph",
-      "content": [
-        { "type": "text", "text": "This is my note." }
-      ]
+      "content": [{ "type": "text", "text": "This is my note." }]
     }
   ]
 }
@@ -392,18 +390,18 @@ Store the document as JSON text in SQLite. Validate the JSON structure before sa
 
 Recommended routes for version 1:
 
-| Route | Access | Purpose |
-| --- | --- | --- |
-| `/` | Public | Landing page or redirect |
-| `/sign-in` | Public | User sign-in |
-| `/sign-up` | Public | Account registration |
-| `/dashboard` | Authenticated | Post-login landing page |
-| `/notes` | Authenticated | List user's notes |
-| `/notes/new` | Authenticated | Create a note |
-| `/notes/[id]` | Owner only | View and edit a note |
-| `/share/[token]` | Public, valid token only | Read-only shared note |
+| Route            | Access                   | Purpose                  |
+| ---------------- | ------------------------ | ------------------------ |
+| `/`              | Public                   | Landing page or redirect |
+| `/sign-in`       | Public                   | User sign-in             |
+| `/sign-up`       | Public                   | Account registration     |
+| `/dashboard`     | Authenticated            | Post-login landing page  |
+| `/notes`         | Authenticated            | List user's notes        |
+| `/notes/new`     | Authenticated            | Create a note            |
+| `/notes/[id]`    | Owner only               | View and edit a note     |
+| `/share/[token]` | Public, valid token only | Read-only shared note    |
 
-**Current status:** all routes above exist. `/sign-in` is the combined sign-in and sign-up page (section 3.1), and `/sign-up` redirects to it. `/dashboard` and `/notes/*` are protected per route, not by a layout. `proxy.ts` does an optimistic session-cookie check and redirects to `/sign-in?callbackUrl=...`. Each protected page then calls `requireSession(path)` from `lib/session.ts` (cached `auth.api.getSession`, authoritative). `/share/[token]` is public. The root layout renders the site-wide header `app/app-header.tsx` on every page. It reads the cached session and shows the "NextNotes" logo linking to `/dashboard`, plus either the signed-in email and a Log out button (`app/sign-out-button.tsx`) or Sign in / Get started links. Protected pages wrap their content in `app/notes/notes-shell.tsx`. It renders the **notes sidebar** (`notes-nav.tsx`; a sticky column on `md+`, and a Popover API drawer on mobile, toggled by a "Your notes" button) listing the user's notes newest first. Each entry shows the title or "Untitled note", the relative updated time and a public-share dot. The active note is marked with `aria-current` by the client component `nav-link.tsx`, which also closes the drawer on click. The data comes from `listNotes(userId)` in `lib/notes.ts`: `id, title, is_public, updated_at` only, newest 50 (the list is capped; `countNotes` returns the uncapped total used for counts, and the dashboard notes when the list is cut short), wrapped in React `cache()` so the sidebar and dashboard share one query. `/dashboard` shows a greeting, a **New Note** link to `/notes/new`, a card grid of the same notes, an empty state, and a shimmer skeleton (`loading.tsx`). Typography: a 17px root (`html { font-size: 106.25% }`, so all rem sizes and spacing scale together), Geist for body text, and **Fraunces** (variable serif, `SOFT`/`opsz` axes, normal and italic, loaded with `next/font/google`) for headings through the `font-display` utility and the `heading` class in `app/ui.ts`. Premium styling: a warm ivory / deep ink palette (all text pairs meet WCAG AA), a faint film-grain overlay, a violet glow behind signed-in pages, glossy gradient buttons (`buttonPrimary` / `buttonPrimaryLarge`, `buttonSecondary` / `buttonSecondaryLarge`), `rounded-3xl` cards with a gradient hairline border on hover (`.glow-border`), violet text selection and thin themed scrollbars. UI theme and motion: colour tokens (`background`, `surface`, `muted`, `border`, `accent`, with dark variants) and the keyframes `fade-in`, `fade-in-up`, `shimmer` and `float` are defined in `app/globals.css`. `.stagger` with an inline `--i` staggers list entry, and `.drawer` animates the popover. Shared control classes are in `app/ui.ts`. A global `prefers-reduced-motion: reduce` rule disables animations and transitions. The landing page `/` and `/sign-in` use the animated `Backdrop`. **Create note is implemented:** `/notes/new` renders `note-form.tsx` (optional title plus the TipTap editor in `rich-text-editor.tsx`, with a toolbar for bold, italic, H1-H3, paragraph, inline code, code block, bullet list and separator). The form posts to the Server Action `createNoteAction` (`app/notes/new/actions.ts`), which re-checks the session, validates with `lib/note-schema.ts` (Zod: title max 200, content max 100,000 characters, only the allowed TipTap node and mark types, nesting depth max 20, and a ProseMirror structure check against the shared editor schema in `lib/editor-extensions.ts`, so a note the editor cannot load is rejected), inserts through `createNote` in `lib/notes.ts` (parameterized SQL, `user_id` from the session, empty title stored as NULL), then redirects to `/notes/[id]`. Duplicate submits are prevented by disabling the button while the action is pending. **Delete note is implemented:** every note in the sidebar and on the dashboard cards has a bin button (`app/notes/delete-note-button.tsx`; revealed on hover or focus in the sidebar, always visible on touch screens). It opens a native `<dialog>` confirmation (animated, Esc or outside click cancels). Confirming posts to the Server Action `deleteNoteAction` (`app/notes/actions.ts`), which re-checks the session, validates `{ id: uuid, currentPath }` with `deleteNoteSchema`, and calls `deleteNote(userId, id)` (`DELETE ... WHERE id = ? AND user_id = ?`, so other users' ids delete nothing). It returns `false` on failure, and the dialog then shows an error. If the deleted note is the one currently open, it redirects to `/dashboard`; otherwise `refresh()` re-renders the page. Both Server Actions reject non-FormData payloads. List, edit and sharing are not built, and `/notes`, `/notes/[id]` and `/share/[token]` are still placeholders. Implementation: `lib/db.ts` (exports `db`; opens the SQLite file in WAL mode with `foreign_keys=ON`, `busy_timeout`, and creates the `note` table and index), `lib/auth.ts` (Better Auth, email and password, `nextCookies`), `lib/auth-client.ts`, `lib/safe-redirect.ts` (validates `callbackUrl`), and `app/api/auth/[...all]/route.ts`. The Better Auth tables are created with `bun run auth:migrate`. Scripts run through `bun --bun` because `bun:sqlite` does not work under Node. Email verification and password reset are not enabled. `next.config.ts` sends `X-Frame-Options: DENY` and `Content-Security-Policy: frame-ancestors 'none'` on every route, so the app cannot be framed (clickjacking). Every protected page must call `requireSession` itself. The note editor placeholder (`/notes/[id]`) includes a stub "Share publicly" line that will generate the `/share/{token}` URL once sharing is built (section 3.4).
+**Current status:** all routes above exist. `/sign-in` is the combined sign-in and sign-up page (section 3.1), and `/sign-up` redirects to it. `/dashboard` and `/notes/*` are protected per route, not by a layout. `proxy.ts` does an optimistic session-cookie check and redirects to `/sign-in?callbackUrl=...`. Each protected page then calls `requireSession(path)` from `lib/session.ts` (cached `auth.api.getSession`, authoritative). `/share/[token]` is public. The root layout renders the site-wide header `app/app-header.tsx` on every page. It reads the cached session and shows the "NextNotes" logo linking to `/dashboard`, plus either the signed-in email and a Log out button (`app/sign-out-button.tsx`) or Sign in / Get started links. Protected pages wrap their content in `app/notes/notes-shell.tsx`. It renders the **notes sidebar** (`notes-nav.tsx`; a sticky column on `md+`, and a Popover API drawer on mobile, toggled by a "Your notes" button) listing the user's notes newest first. Each entry shows the title or "Untitled note", the relative updated time and a public-share dot. The active note is marked with `aria-current` by the client component `nav-link.tsx`, which also closes the drawer on click. The data comes from `listNotes(userId)` in `lib/notes.ts`: `id, title, is_public, updated_at` only, newest 50 (the list is capped; `countNotes` returns the uncapped total used for counts, and the dashboard notes when the list is cut short), wrapped in React `cache()` so the sidebar and dashboard share one query. `/dashboard` shows a greeting, a **New Note** link to `/notes/new`, a card grid of the same notes, an empty state, and a shimmer skeleton (`loading.tsx`). Typography: a 17px root (`html { font-size: 106.25% }`, so all rem sizes and spacing scale together), Geist for body text, and **Fraunces** (variable serif, `SOFT`/`opsz` axes, normal and italic, loaded with `next/font/google`) for headings through the `font-display` utility and the `heading` class in `app/ui.ts`. Theme "Studio Desk" (a writer's desk): paper-cream surfaces, warm ink text and a terracotta accent, with an espresso-toned dark mode (all text pairs meet WCAG AA; button fills use orange-700 and darker so white text passes), a faint film-grain overlay, a soft lamp-light glow behind signed-in pages, glossy gradient buttons (`buttonPrimary` / `buttonPrimaryLarge`, `buttonSecondary` / `buttonSecondaryLarge`), `rounded-3xl` cards with a gradient hairline border on hover (`.glow-border`), terracotta text selection and thin themed scrollbars. UI theme and motion: colour tokens (`background`, `surface`, `muted`, `border`, `accent`, with dark variants) and the keyframes `fade-in`, `fade-in-up`, `shimmer` and `float` are defined in `app/globals.css`. `.stagger` with an inline `--i` staggers list entry, and `.drawer` animates the popover. Shared control classes are in `app/ui.ts`. A global `prefers-reduced-motion: reduce` rule disables animations and transitions. The landing page `/` and `/sign-in` use the animated `Backdrop`. **Create note is implemented:** `/notes/new` renders `note-form.tsx` (optional title plus the TipTap editor in `rich-text-editor.tsx`, with a toolbar for bold, italic, H1-H3, paragraph, inline code, code block, bullet list and separator). The form posts to the Server Action `createNoteAction` (`app/notes/new/actions.ts`), which re-checks the session, validates with `lib/note-schema.ts` (Zod: title max 200, content max 100,000 characters, only the allowed TipTap node and mark types, nesting depth max 20, and a ProseMirror structure check against the shared editor schema in `lib/editor-extensions.ts`, so a note the editor cannot load is rejected), inserts through `createNote` in `lib/notes.ts` (parameterized SQL, `user_id` from the session, empty title stored as NULL), then redirects to `/notes/[id]`. Duplicate submits are prevented by disabling the button while the action is pending. **Delete note is implemented:** every note in the sidebar and on the dashboard cards has a bin button (`app/notes/delete-note-button.tsx`; revealed on hover or focus in the sidebar, always visible on touch screens). It opens a native `<dialog>` confirmation (animated, Esc or outside click cancels). Confirming posts to the Server Action `deleteNoteAction` (`app/notes/actions.ts`), which re-checks the session, validates `{ id: uuid, currentPath }` with `deleteNoteSchema`, and calls `deleteNote(userId, id)` (`DELETE ... WHERE id = ? AND user_id = ?`, so other users' ids delete nothing). It returns `false` on failure, and the dialog then shows an error. If the deleted note is the one currently open, it redirects to `/dashboard`; otherwise `refresh()` re-renders the page. Both Server Actions reject non-FormData payloads. Sharing is implemented (section 3.4). `/notes` is still a placeholder. Implementation: `lib/db.ts` (exports `db`; opens the SQLite file in WAL mode with `foreign_keys=ON`, `busy_timeout`, and creates the `note` table and index), `lib/auth.ts` (Better Auth, email and password, `nextCookies`), `lib/auth-client.ts`, `lib/safe-redirect.ts` (validates `callbackUrl`), and `app/api/auth/[...all]/route.ts`. The Better Auth tables are created with `bun run auth:migrate`. Scripts run through `bun --bun` because `bun:sqlite` does not work under Node. Email verification and password reset are not enabled. `next.config.ts` sends `X-Frame-Options: DENY` and `Content-Security-Policy: frame-ancestors 'none'` on every route, so the app cannot be framed (clickjacking). Every protected page must call `requireSession` itself. The note editor (`/notes/[id]`) includes the sharing panel described in section 3.4.
 
 Better Auth may use its own configured authentication endpoint. Keep those endpoints consistent with its supported integration rather than duplicating authentication logic in custom routes.
 
@@ -415,16 +413,16 @@ The application can use Next.js Server Actions for UI-driven operations and Rout
 
 Recommended operations:
 
-| Operation | Input | Authorization |
-| --- | --- | --- |
-| Create note | Title and TipTap JSON | Authenticated user |
-| List notes | Pagination or list parameters | Authenticated user |
-| Get note | Note ID | Owner only |
-| Update note | Note ID, title, content | Owner only |
-| Delete note | Note ID | Owner only |
-| Enable sharing | Note ID | Owner only |
-| Disable sharing | Note ID | Owner only |
-| Get shared note | Public token | Valid active token |
+| Operation       | Input                         | Authorization      |
+| --------------- | ----------------------------- | ------------------ |
+| Create note     | Title and TipTap JSON         | Authenticated user |
+| List notes      | Pagination or list parameters | Authenticated user |
+| Get note        | Note ID                       | Owner only         |
+| Update note     | Note ID, title, content       | Owner only         |
+| Delete note     | Note ID                       | Owner only         |
+| Enable sharing  | Note ID                       | Owner only         |
+| Disable sharing | Note ID                       | Owner only         |
+| Get shared note | Public token                  | Valid active token |
 
 For every note mutation, obtain the user ID from the validated server-side session. Never trust a `user_id` submitted by the browser.
 
@@ -528,17 +526,17 @@ SQLite is suitable for a small, single-instance application. If the application 
 
 ## 12. Testing strategy
 
-| Test category | Required coverage |
-| --- | --- |
-| Unit tests | Validation, token generation, note business logic |
-| Integration tests | SQLite queries, CRUD operations, sharing and revocation, cascade deletion of a user's sessions, accounts, and notes |
-| Authentication tests | Sign-up (including the required name), sign-in, sign-out, session expiration |
-| Authorization tests | Cross-user access attempts must fail |
-| Editor tests | Formatting, serialization, and document restoration |
-| Sharing tests | Valid token, invalid token, revoked token, read-only behavior |
-| UI tests | Dashboard, editor, empty states, error states, mobile layout |
-| Security tests | SQL injection, malicious rich-text content, access-control bypass |
-| Reliability tests | Save failures, repeated submissions, concurrent updates |
+| Test category        | Required coverage                                                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Unit tests           | Validation, token generation, note business logic                                                                   |
+| Integration tests    | SQLite queries, CRUD operations, sharing and revocation, cascade deletion of a user's sessions, accounts, and notes |
+| Authentication tests | Sign-up (including the required name), sign-in, sign-out, session expiration                                        |
+| Authorization tests  | Cross-user access attempts must fail                                                                                |
+| Editor tests         | Formatting, serialization, and document restoration                                                                 |
+| Sharing tests        | Valid token, invalid token, revoked token, read-only behavior                                                       |
+| UI tests             | Dashboard, editor, empty states, error states, mobile layout                                                        |
+| Security tests       | SQL injection, malicious rich-text content, access-control bypass                                                   |
+| Reliability tests    | Save failures, repeated submissions, concurrent updates                                                             |
 
 Use an isolated test database and clean up test records between test runs. Include automated tests that confirm one user cannot read, modify, or delete another user's private notes.
 

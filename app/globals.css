@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ebe8e1;
-  --foreground: #0f0e14;
-  --surface: #ffffff;
-  --muted: #3b3945;
-  --border: #c9c4bb;
-  --accent: #4c1d95;
+  --background: #f5efe4;
+  --foreground: #1f1a14;
+  --surface: #fffaf1;
+  --muted: #5c5247;
+  --border: #ddd2c0;
+  --accent: #c2410c;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0b0a10;
-    --foreground: #f3f2f7;
-    --surface: #15141c;
-    --muted: #aaa7b6;
-    --border: #272530;
-    --accent: #c4b5fd;
+    --background: #1a1612;
+    --foreground: #f1e8da;
+    --surface: #241e18;
+    --muted: #b5a893;
+    --border: #3a3128;
+    --accent: #fb923c;
   }
 }
 
@@ -93,7 +93,7 @@ h3 {
 }
 
 ::selection {
-  background: rgb(139 92 246 / 0.25);
+  background: rgb(234 88 12 / 0.2);
 }
 
 /* Barely visible film grain over the whole page for a tactile, printed feel. */
@@ -118,7 +118,7 @@ body::after {
   inset: 0;
   padding: 1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, #6366f1, #a855f7 50%, #ec4899);
+  background: linear-gradient(135deg, #ea580c, #d97706 50%, #b91c1c);
   mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);

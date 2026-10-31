@@ -19,13 +19,13 @@ export async function AppHeader() {
         <Link href="/dashboard" className={`group flex items-center gap-2.5 rounded-lg ${focusRing}`}>
           <span
             aria-hidden="true"
-            className="grid size-9 place-items-center rounded-xl bg-linear-to-br from-indigo-500 via-violet-600 to-purple-700 font-display text-lg font-semibold text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_6px_16px_-4px_rgb(124_58_237/0.55)] transition duration-300 group-hover:rotate-6 group-hover:scale-110"
+            className="grid size-9 place-items-center rounded-xl bg-linear-to-br from-orange-600 via-orange-700 to-red-800 font-display text-lg font-semibold text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_6px_16px_-4px_rgb(154_52_18/0.55)] transition duration-300 group-hover:rotate-6 group-hover:scale-110"
           >
             N
           </span>
           <span className="font-display text-2xl font-semibold">
             Next
-            <span className="bg-linear-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent dark:from-violet-300 dark:to-fuchsia-300">
+            <span className="bg-linear-to-r from-orange-700 to-red-800 bg-clip-text text-transparent dark:from-orange-300 dark:to-amber-200">
               Notes
             </span>
           </span>
@@ -36,7 +36,7 @@ export async function AppHeader() {
             <span className="hidden min-w-0 items-center gap-2 rounded-full border border-border bg-surface/70 py-1 pr-3.5 pl-1 shadow-sm sm:flex">
               <span
                 aria-hidden="true"
-                className="grid size-7 shrink-0 place-items-center rounded-full bg-linear-to-br from-indigo-500 to-purple-600 text-sm font-semibold text-white"
+                className="grid size-7 shrink-0 place-items-center rounded-full bg-linear-to-br from-orange-600 to-red-800 text-sm font-semibold text-white"
               >
                 {(user.name || user.email).charAt(0).toUpperCase()}
               </span>
@@ -50,7 +50,7 @@ export async function AppHeader() {
           <nav aria-label="Account" className="flex items-center gap-2">
             <Link
               href="/sign-in"
-              className={`rounded-xl px-4 py-2 text-[0.95rem] font-medium transition hover:bg-violet-500/10 ${focusRing}`}
+              className={`rounded-xl px-4 py-2 text-[0.95rem] font-medium transition hover:bg-orange-600/10 ${focusRing}`}
             >
               Sign in
             </Link>
@@ -61,7 +61,7 @@ export async function AppHeader() {
         )}
       </div>
       {/* Hairline gradient divider */}
-      <div aria-hidden="true" className="h-px bg-linear-to-r from-transparent via-violet-500/30 to-transparent" />
+      <div aria-hidden="true" className="h-px bg-linear-to-r from-transparent via-orange-700/30 to-transparent" />
     </header>
   );
 }

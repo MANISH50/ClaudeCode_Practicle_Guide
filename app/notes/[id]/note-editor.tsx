@@ -8,6 +8,7 @@ import { Spinner } from "@/app/spinner";
 import { buttonPrimary, buttonSecondary, card, errorText, fieldBase } from "@/app/ui";
 import type { NoteDetail } from "@/lib/notes";
 import { updateNoteAction } from "./actions";
+import { ShareControl } from "./share-control";
 
 type NoteEditorProps = { note: NoteDetail; editedLabel: string };
 
@@ -25,14 +26,11 @@ export function NoteEditor({ note, editedLabel }: NoteEditorProps) {
       <header className="flex flex-wrap items-center justify-between gap-4">
         <p className="flex flex-wrap items-center gap-2 text-[0.95rem] text-muted">
           <span className="tabular-nums">Edited {editedLabel}</span>
-          {note.isPublic && (
-            <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-sm font-medium text-emerald-800 dark:text-emerald-300">
-              Public
-            </span>
-          )}
         </p>
         <DeleteNoteButton id={note.id} title={note.title} className="border border-border" />
       </header>
+
+      <ShareControl noteId={note.id} shareToken={note.shareToken} />
 
       <form action={formAction} aria-busy={pending} className={`flex flex-col gap-7 p-6 sm:p-8 ${card}`}>
         <input type="hidden" name="id" value={note.id} />

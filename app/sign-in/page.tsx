@@ -17,7 +17,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Searc
   return (
     <main id="main" className="mx-auto flex min-h-[calc(100dvh-4.5rem)] max-w-lg flex-col justify-center px-4 py-12">
       <Backdrop />
-      <div key={currentMode} className="flex animate-fade-in-up flex-col gap-7 rounded-3xl border border-border bg-surface/85 p-7 shadow-[0_24px_60px_-24px_rgb(76_29_149/0.35)] backdrop-blur-md sm:p-10">
+      <div key={currentMode} className="flex animate-fade-in-up flex-col gap-7 rounded-3xl border border-border bg-surface/85 p-7 shadow-[0_24px_60px_-24px_rgb(67_20_7/0.35)] backdrop-blur-md sm:p-10">
         {created === "1" && (
           <p role="status" className="animate-fade-in rounded-xl bg-emerald-500/10 px-4 py-3 text-[0.95rem] text-emerald-700 dark:text-emerald-300">
             Account created. Sign in to continue.

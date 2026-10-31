@@ -28,5 +28,19 @@
   "sandbox": {
     "enabled": true,
     "autoAllowBashIfSandboxed": true
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"${CLAUDE_PROJECT_DIR}/.claude/hooks/format.ts\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
   }
 }

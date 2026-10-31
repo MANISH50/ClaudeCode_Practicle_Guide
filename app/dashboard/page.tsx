@@ -37,7 +37,7 @@ export default async function DashboardPage() {
         <div className={`mt-10 flex flex-col items-center gap-5 px-6 py-20 text-center ${card}`}>
           <span
             aria-hidden="true"
-            className="grid size-20 animate-[float_6s_ease-in-out_infinite] place-items-center rounded-3xl bg-linear-to-br from-indigo-500/15 via-violet-500/20 to-purple-500/25 text-4xl shadow-[inset_0_1px_0_rgb(255_255_255/0.4)]"
+            className="grid size-20 animate-[float_6s_ease-in-out_infinite] place-items-center rounded-3xl bg-linear-to-br from-orange-500/15 via-amber-500/20 to-rose-500/20 text-4xl shadow-[inset_0_1px_0_rgb(255_255_255/0.4)]"
           >
             ✍️
           </span>
@@ -55,11 +55,11 @@ export default async function DashboardPage() {
             <li key={note.id} style={{ "--i": index } as CSSProperties} className="stagger relative animate-fade-in-up">
               <Link
                 href={`/notes/${note.id}`}
-                className={`glow-border group flex h-full min-h-44 flex-col gap-4 p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-20px_rgb(124_58_237/0.35)] ${card} ${focusRing}`}
+                className={`glow-border group flex h-full min-h-44 flex-col gap-4 p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-20px_rgb(154_52_18/0.35)] ${card} ${focusRing}`}
               >
                 <span
                   aria-hidden="true"
-                  className="h-1 w-10 rounded-full bg-linear-to-r from-indigo-500 via-violet-500 to-purple-500 transition-all duration-500 group-hover:w-20"
+                  className="h-1 w-10 rounded-full bg-linear-to-r from-orange-600 via-amber-500 to-orange-400 transition-all duration-500 group-hover:w-20"
                 />
                 <h2 className={`line-clamp-2 pr-8 text-xl leading-snug ${heading}`}>{note.title ?? "Untitled note"}</h2>
                 <div className="mt-auto flex items-center justify-between gap-2 text-sm text-muted">
